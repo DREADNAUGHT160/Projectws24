@@ -23,7 +23,7 @@ class SensorApp:
         self.camera_button = tk.Button(root, text="Start Camera", command=self.check_camera)
         self.camera_button.pack(pady=10)
 
-        self.disdrometer_button = tk.Button(root, text="Plug in Disdrometer", command=self.check_disdrometer)
+        self.disdrometer_button = tk.Button(root, text="Check Disdrometer", command=self.check_disdrometer)
         self.disdrometer_button.pack(pady=10)
 
         # Button to start data collection after sensors
