@@ -91,26 +91,16 @@ class SensorApp:
             messagebox.showinfo("Success", "Lidar node started successfully")
 
     def start_radar(self):
-    commands = [
-        "cd mmwave_ti_ros/ros1_driver",
-        "source devel/setup.bash",
-        "roslaunch ti_mmwave_rospkg 1443_multi_3d_g.launch"
-    ]
+        command = """
+        cd mmwave_ti_ros/ros1_driver && \
+        source devel/setup.bash && \
+        roslaunch ti_mmwave_rospkg 1443_multi_3d_g.launch
+        """
+        if self.open_terminal(command):
+            messagebox.showinfo("Success", "Radar node started successfully")
 
-    try:
-        # Run each command sequentially, waiting for each to finish before running the next
-        for command in commands:
-            process = subprocess.Popen(
-                ['gnome-terminal', '--', 'bash', '-c', f'{command}; exec bash'],
-                preexec_fn=os.setsid
-            )
-            self.processes.append(process)
-            process.wait()  # Wait for this command to finish before proceeding
-
-        messagebox.showinfo("Success", "Radar node started successfully")
-
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to start radar: {str(e)}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to start radar: {str(e)}")
 
     def start_camera(self):
         command = """
