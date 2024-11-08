@@ -1,0 +1,43 @@
+import rosbag
+import sensor_msgs.point_cloud2 as pc2
+from sensor_msgs.msg import PointCloud2
+import rospy
+import csv
+
+def extract_radar_point_cloud(bag_file_path, topic_name, output_csv):
+    """
+    Extract radar point cloud data from a ROS bag file and save it to a CSV file.
+
+    Parameters:
+    - bag_file_path (str): Path to the input ROS bag file.
+    - topic_name (str): Name of the topic to extract radar point cloud data from.
+    - output_csv (str): Path to save the extracted data as a CSV file.
+    """
+    try:
+        bag = rosbag.Bag(bag_file_path)
+    except Exception as e:
+        print(f"Error opening bag file: {e}")
+        return
+
+    with open(output_csv, 'w') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        # Define CSV header
+        csv_writer.writerow(['x', 'y', 'z', 'intensity'])
+
+        for topic, msg, t in bag.read_messages(topics=[topic_name]):
+            if isinstance(msg, PointCloud2):
+                # Extract points from PointCloud2 message
+                for point in pc2.read_points(msg, skip_nans=True):
+                    # Extract x, y, z, and optionally intensity (if available)
+                    x, y, z = point[:3]
+                    intensity = point[3] if len(point) > 3 else None
+                    csv_writer.writerow([x, y, z, intensity])
+
+    bag.close()
+    print(f"Point cloud data extracted and saved to {output_csv}")
+
+# Example usage
+bag_file_path = 'input.bag'  # Path to your bag file
+topic_name = '/radar_points'  # Replace with your radar point cloud topic
+output_csv = 'radar_point_cloud.csv'
+extract_radar_point_cloud(bag_file_path, topic_name, output_csv)
